@@ -1,0 +1,54 @@
+{
+  "name": "messalid",
+  "scripts": {
+    "prepare": "npx simple-git-hooks",
+    "dev": "solid-start dev",
+    "build": "solid-start build",
+    "start": "solid-start start",
+    "lint:fix": "eslint_d --fix"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@catppuccin/tailwindcss": "^0.1.1",
+    "@solidjs/testing-library": "^0.6.1",
+    "@types/eslint": "^8.21.1",
+    "@types/prettier": "^2.7.2",
+    "@typescript-eslint/eslint-plugin": "^5.44.0",
+    "@typescript-eslint/parser": "^5.43.0",
+    "autoprefixer": "^10.4.13",
+    "eslint": "^8.28.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-import-resolver-typescript": "^3.5.3",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-solid": "^0.9.4",
+    "eslint_d": "^12.2.1",
+    "postcss": "^8.4.21",
+    "prettier": "^2.8.4",
+    "simple-git-hooks": "^2.8.1",
+    "solid-start-node": "^0.2.19",
+    "tailwindcss": "^3.2.4",
+    "typescript": "^4.9.4",
+    "vite": "^3.2.5"
+  },
+  "dependencies": {
+    "@chainsafe/libp2p-gossipsub": "^6.1.0",
+    "@chainsafe/libp2p-noise": "^11.0.0",
+    "@libp2p/mplex": "^7.1.1",
+    "@libp2p/tcp": "^6.1.2",
+    "@solidjs/meta": "^0.28.2",
+    "@solidjs/router": "^0.7.0",
+    "clsx": "^1.2.1",
+    "libp2p": "^0.42.2",
+    "solid-js": "^1.6.11",
+    "solid-start": "^0.2.21",
+    "undici": "^5.15.1"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npm run lint:fix"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}

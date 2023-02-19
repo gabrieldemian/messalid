@@ -1,0 +1,86 @@
+:root {
+  --base: 239 241 245;
+  --crust: 220 224 232;
+
+  --text-base: 76 79 105;
+  --text-primary: 92 95 119;
+  --text-secondary: 108 111 133;
+
+  --pink: 234 118 203;
+  --lavender: 114 135 253;
+  --mauve: 136 57 239;
+
+  --font-sans: -apple-system, system-ui, BlinkMacSystemFont, 'Helvetica Neue',
+    'Helvetica', sans-serif;
+}
+
+[data-theme='dark'] {
+  --base: 30 30 46;
+  --crust: 17 17 17;
+
+  --text-base: 205 214 244;
+  --text-primary: 186 194 222;
+  --text-secondary: 166 173 200;
+
+  --pink: 245 194 231;
+  --lavender: 180 190 254;
+  --mauve: 203 166 247;
+}
+
+html,
+body {
+  height: 100%;
+  box-sizing: border-box;
+  touch-action: manipulation;
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: rgb(var(--base));
+  color: rgb(var(--text-base));
+  overscroll-behavior-x: none;
+}
+
+body {
+  position: relative;
+  min-height: 100vh;
+  margin: 0;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+.animated {
+  animation-duration: 1s;
+  animation-fill-mode: both;
+  -webkit-animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+}
+
+.fadeIn {
+  animation-name: fadeIn;
+  -webkit-animation-name: fadeIn;
+}
+
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
