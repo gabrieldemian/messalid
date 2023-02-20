@@ -1,3 +1,7 @@
 .fit {
   min-height: calc(100vh - 88px);
 }
+
+input[type="text"], input {
+  @apply py-2 px-4 text-base rounded-lg shadow-md outline-mauve bg-base;
+}

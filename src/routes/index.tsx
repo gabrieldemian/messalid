@@ -12,6 +12,7 @@ export default function Home() {
       </Card>
       <Button>I am a humble button</Button>
       <Button variant="outlined">I am a humble button</Button>
+      <input placeholder="Type your message..." />
     </main>
   )
 }
