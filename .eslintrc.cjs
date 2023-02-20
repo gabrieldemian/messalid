@@ -1,15 +1,6 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'import', 'solid'],
-  // settings: {
-  //   'import/parsers': {
-  //     '@typescript-eslint/parser': ['.ts'],
-  //     '@typescript-eslint': ['.ts'],
-  //   },
-  //   'import/resolver': {
-  //     typescript: {},
-  //   },
-  // },
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
@@ -20,6 +11,7 @@ module.exports = {
     'prettier',
   ],
   rules: {
+    'max-len': ['error', { code: 80 }],
     'prettier/prettier': [
       'error',
       {
@@ -29,6 +21,7 @@ module.exports = {
         tabWidth: 2,
         bracketSpacing: true,
         semi: false,
+        printWidth: 80,
       },
     ],
     '@typescript-eslint/explicit-module-boundary-types': 'off',
@@ -63,6 +56,7 @@ module.exports = {
         ignoreMemberSort: false,
       },
     ],
+    'solid/no-destructure': 'off',
   },
   ignorePatterns: ['CHANGELOG.md', 'build', 'dist', 'node_modules'],
   env: {

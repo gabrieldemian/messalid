@@ -20,12 +20,12 @@ module.exports = {
         secondary: 'rgb(var(--text-secondary) / <alpha-value>)',
       },
       backgroundColor: {
-        primary: 'rgb(var(--primary) / <alpha-value>)',
-        secondary: 'rgb(var(--secondary) / <alpha-value>)',
+        base: 'rgb(var(--base) / <alpha-value>)',
+        crust: 'rgb(var(--crust) / <alpha-value>)',
       },
       borderColor: {
-        primary: 'rgb(var(--primary) / <alpha-value>)',
-        secondary: 'rgb(var(--secondary) / <alpha-value>)',
+        base: 'rgb(var(--base) / <alpha-value>)',
+        crust: 'rgb(var(--crust) / <alpha-value>)',
       },
     },
   },

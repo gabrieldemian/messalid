@@ -1,6 +1,6 @@
 :root {
   --base: 239 241 245;
-  --crust: 220 224 232;
+  --crust: 225 230 237;
 
   --text-base: 76 79 105;
   --text-primary: 92 95 119;
@@ -36,9 +36,10 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: rgb(var(--base));
+  background-color: rgb(var(--crust));
   color: rgb(var(--text-base));
   overscroll-behavior-x: none;
+  font-weight: 700;
 }
 
 body {
