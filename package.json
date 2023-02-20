@@ -37,12 +37,15 @@
     "@chainsafe/libp2p-noise": "^11.0.0",
     "@libp2p/mplex": "^7.1.1",
     "@libp2p/tcp": "^6.1.2",
+    "@libp2p/webrtc-star": "^6.0.0",
+    "@libp2p/websockets": "^5.0.3",
     "@solidjs/meta": "^0.28.2",
     "@solidjs/router": "^0.7.0",
     "clsx": "^1.2.1",
     "libp2p": "^0.42.2",
     "solid-js": "^1.6.11",
     "solid-start": "^0.2.21",
+    "uint8arrays": "^4.0.3",
     "undici": "^5.15.1"
   },
   "simple-git-hooks": {
