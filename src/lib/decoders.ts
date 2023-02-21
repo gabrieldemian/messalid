@@ -2,27 +2,10 @@ import type { Stream } from '@libp2p/interface-connection'
 import * as lp from 'it-length-prefixed'
 import map from 'it-map'
 import { pipe } from 'it-pipe'
-import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
-export function stdinToStream(stream: Stream) {
-  // Read utf-8 from stdin
-  process.stdin.setEncoding('utf8')
-  pipe(
-    // Read from stdin (the source)
-    process.stdin,
-    // Turn strings into buffers
-    (source) => map(source, (string) => uint8ArrayFromString(string)),
-    // Encode with length prefix
-    // (so receiving side knows how much data is coming)
-    lp.encode(),
-    // Write to the stream (the sink)
-    stream.sink,
-  )
-}
-
 export async function streamToString(stream: Stream) {
-  const data = await pipe(
+  const data = pipe(
     // Read from the stream (the source)
     stream.source,
     // Decode length-prefixed data
@@ -33,6 +16,7 @@ export async function streamToString(stream: Stream) {
     async function (source) {
       // For each chunk of data
       for await (const msg of source) {
+        console.log('i am on msg ', msg, msg.toString())
         // Return the data as a utf8 string
         return msg.toString().replace('\n', '')
       }

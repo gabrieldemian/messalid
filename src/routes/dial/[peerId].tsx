@@ -20,7 +20,7 @@ export default function Chat() {
   })
 
   return (
-    <main class="p-4 mx-auto text-center">
+    <main class="text-center">
       <input
         value={msg()}
         onKeyUp={(e: any) => setMsg(e.target.value)}

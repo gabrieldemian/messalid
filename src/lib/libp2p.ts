@@ -10,8 +10,6 @@ import { createEffect, createMemo, createSignal } from 'solid-js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
-import { streamToString } from './decoders'
-
 export const defaultTopic = 'messalid'
 
 const wrtcStar = webRTCStar()
@@ -49,15 +47,11 @@ createEffect(() => {
         } when ${new Date(e.timeStamp).toLocaleTimeString()}`,
       )
     })
-    //myPeer()?.addEventListener('peer:connect', (e) => {
-    //const connection = e.detail
-    //console.log('connected to: ', connection.remotePeer.toString())
-    //console.log('on my list ', myPeer()?.getPeers())
-    //})
-    myPeer()?.handle('/chat/1.0.0', async ({ stream }) => {
+    // not working (yet) but it needs to be here
+    myPeer()?.handle('/chat/1.0.0', async () => {
       console.log('received msg on /chat/')
-      const msg = await streamToString(stream)
-      console.log('Received msg from /chat/: ', msg)
+      //const msg = await streamToString(stream)
+      //console.log('Received msg from /chat/: ', msg)
     })
   }
 })
@@ -77,13 +71,17 @@ interface Message {
   message: string
 }
 
-export const sendMessage = ({
+export const sendMessage = async ({
   peer = myPeer(),
   topic = defaultTopic,
   message,
 }: Message) => {
   if (peer) {
-    peer.pubsub.publish(topic, uint8ArrayFromString(message))
+    const result = await peer.pubsub.publish(
+      topic,
+      uint8ArrayFromString(message),
+    )
+    console.log(result)
   }
 }
 

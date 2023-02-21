@@ -1,7 +1,7 @@
 import { A } from '@solidjs/router'
 import { createSignal } from 'solid-js'
 
-import { Button, Card } from '~/components'
+import { Button } from '~/components'
 import { isPeerReady, myPeer, sendMessage } from '~/lib'
 
 export default function Home() {
@@ -13,12 +13,12 @@ export default function Home() {
     }
   }
 
+  // todo: screen with 2 options:
+  // 1 - create a room with a topic -> go to chat
+  // 2 - paste peerid and topic -> go to chat
+
   return (
-    <main class="p-4 mx-auto text-center">
-      <Card>
-        <p>Card aaa</p>
-      </Card>
-      <Card variant="filled">I am a card!!!</Card>
+    <main class="text-center">
       <input
         value={msg()}
         onKeyUp={(e: any) => setMsg(e.target.value)}
