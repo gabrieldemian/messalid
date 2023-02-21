@@ -1,10 +1,12 @@
-import { A } from '@solidjs/router'
-import { createSignal } from 'solid-js'
+import { createEffect, createSignal } from 'solid-js'
+import { useParams } from 'solid-start'
 
-import { Button, Card } from '~/components'
-import { isPeerReady, myPeer, sendMessage } from '~/lib'
+import { Button } from '~/components'
 
-export default function Home() {
+import { dial, isPeerReady, myPeer, sendMessage } from '~/lib'
+
+export default function Chat() {
+  const params = useParams()
   const [msg, setMsg] = createSignal<string>('')
 
   const handleSendMessage = async () => {
@@ -13,12 +15,12 @@ export default function Home() {
     }
   }
 
+  createEffect(() => {
+    dial(params.peerId)
+  })
+
   return (
     <main class="p-4 mx-auto text-center">
-      <Card>
-        <p>Card aaa</p>
-      </Card>
-      <Card variant="filled">I am a card!!!</Card>
       <input
         value={msg()}
         onKeyUp={(e: any) => setMsg(e.target.value)}
@@ -30,8 +32,6 @@ export default function Home() {
       >
         Send
       </Button>
-      <p>{isPeerReady() ? 'peer is ready' : 'Loading...'}</p>
-      <A href={`/dial/${myPeer()?.peerId.toString()}/nadaagui`}>Chat</A>
     </main>
   )
 }

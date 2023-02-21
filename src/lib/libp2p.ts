@@ -1,16 +1,18 @@
 import { gossipsub } from '@chainsafe/libp2p-gossipsub'
 import { noise } from '@chainsafe/libp2p-noise'
-import type { PeerId } from '@libp2p/interface-peer-id'
 import { mplex } from '@libp2p/mplex'
 import { webRTCStar } from '@libp2p/webrtc-star'
 import { webSockets } from '@libp2p/websockets'
+import { multiaddr as createMultiAddr } from '@multiformats/multiaddr'
 import type { Libp2p } from 'libp2p'
 import { createLibp2p } from 'libp2p'
 import { createEffect, createMemo, createSignal } from 'solid-js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
-export const defaultTopic = 'news'
+import { streamToString } from './decoders'
+
+export const defaultTopic = 'messalid'
 
 const wrtcStar = webRTCStar()
 
@@ -19,7 +21,6 @@ export const createNode = async () => {
   const node = await createLibp2p({
     addresses: {
       listen: [
-        //'/ip4/0.0.0.0/tcp/0',
         '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
         '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
       ],
@@ -35,41 +36,36 @@ export const createNode = async () => {
 }
 
 export const [myPeer, setMyPeer] = createSignal<Libp2p>()
-export const [bob, setBob] = createSignal<Libp2p>()
 
 export const isPeerReady = createMemo(() => Boolean(myPeer()))
 
 createEffect(() => {
-  if (myPeer() && bob()) {
-    console.log('alice and bob are loaded')
-    console.log(myPeer())
+  if (myPeer()) {
     myPeer()?.pubsub.subscribe(defaultTopic)
-    bob()?.pubsub.subscribe(defaultTopic)
-    myPeer()?.pubsub.addEventListener('message', (evt) => {
+    myPeer()?.pubsub.addEventListener('message', (e) => {
       console.log(
-        `alice received: ${uint8ArrayToString(evt.detail.data)} on topic ${
-          evt.detail.topic
-        }`,
+        `Received: ${uint8ArrayToString(e.detail.data)} on topic ${
+          e.detail.topic
+        } when ${new Date(e.timeStamp).toLocaleTimeString()}`,
       )
     })
-    bob()?.pubsub.addEventListener('message', (evt) => {
-      console.log(
-        `bob received: ${uint8ArrayToString(evt.detail.data)} on topic ${
-          evt.detail.topic
-        }`,
-      )
+    //myPeer()?.addEventListener('peer:connect', (e) => {
+    //const connection = e.detail
+    //console.log('connected to: ', connection.remotePeer.toString())
+    //console.log('on my list ', myPeer()?.getPeers())
+    //})
+    myPeer()?.handle('/chat/1.0.0', async ({ stream }) => {
+      console.log('received msg on /chat/')
+      const msg = await streamToString(stream)
+      console.log('Received msg from /chat/: ', msg)
     })
   }
 })
 
 export const initPeers = async () => {
-  const [alice, bob] = await Promise.all([createNode(), createNode()])
-
-  await alice.peerStore.addressBook.set(bob.peerId, bob.getMultiaddrs())
-  await alice.dial(bob.peerId)
-
-  setMyPeer(alice)
-  setBob(bob)
+  const myPeer = await createNode()
+  console.log('peerId: ', myPeer.peerId.toString())
+  setMyPeer(myPeer)
 }
 
 // a trick to only run in the browser
@@ -91,36 +87,15 @@ export const sendMessage = ({
   }
 }
 
-export const Dial = async (
-  peerId: PeerId,
-  multiaddr: ReturnType<Libp2p['getMultiaddrs']>,
-) => {
+export const dial = async (peerId: string) => {
   if (myPeer()) {
-    // add target to the peerStore and then Dial
-    await myPeer()!.peerStore.addressBook.set(peerId, multiaddr)
-    await myPeer()!.dial(peerId)
-
-    // subscribes target to the topic.
-    // in the near future this will be removed
-    // when I use another computer to test the other end
-    //target.pubsub.subscribe(defaultTopic)
-
-    // subscribe to messages sent to me
-    myPeer()?.pubsub.addEventListener('message', (evt) => {
-      console.log(
-        `alice received: ${uint8ArrayToString(evt.detail.data)} on topic ${
-          evt.detail.topic
-        }`,
-      )
-    })
-
-    // subscribe to messages sent to target. Will be removed in the future
-    //target.pubsub.addEventListener('message', (evt) => {
-    //console.log(
-    //`bob received: ${uint8ArrayToString(evt.detail.data)} on topic ${
-    //evt.detail.topic
-    //}`,
-    //)
-    //})
+    const multiAddr = createMultiAddr(
+      [
+        '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/',
+        `wss/p2p-webrtc-star/p2p/${peerId}`,
+      ].join(''),
+    )
+    await myPeer()!.dialProtocol(multiAddr, '/chat/1.0.0')
+    console.log('dialed with success')
   }
 }
