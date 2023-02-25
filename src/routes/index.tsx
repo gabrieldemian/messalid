@@ -1,4 +1,3 @@
-import { A } from '@solidjs/router'
 import { createSignal } from 'solid-js'
 
 import { Button, Card } from '~/components'
@@ -9,7 +8,7 @@ export default function Home() {
   const [topic, setTopic] = createSignal<string>('')
 
   return (
-    <main class="flex justify-center h-full">
+    <main class="container flex justify-center h-full">
       <Card class="flex flex-col gap-10 m-auto w-full max-w-[450px]">
         <div class="flex flex-col gap-3">
           <h1 class="text-2xl">Create Room</h1>
@@ -47,7 +46,6 @@ export default function Home() {
             Join
           </Button>
         </div>
-        <A href={`/dial/${myPeer()?.peerId.toString()}/nadaagui`}>Chat</A>
       </Card>
     </main>
   )

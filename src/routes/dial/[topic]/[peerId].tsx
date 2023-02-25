@@ -1,9 +1,16 @@
-import { createEffect, createSignal } from 'solid-js'
+import { For, createEffect, createSignal } from 'solid-js'
 import { A, useParams } from 'solid-start'
 
-import { Button, Card } from '~/components'
+import { Button, Card, Loading } from '~/components'
 
-import { dial, initPeers, isPeerReady, myPeer, sendMessage } from '~/lib'
+import {
+  dial,
+  initPeers,
+  isPeerReady,
+  messages,
+  myPeer,
+  sendMessage,
+} from '~/lib'
 
 export default function Chat() {
   const params = useParams()
@@ -34,22 +41,24 @@ export default function Chat() {
           {'<-'} Go Back
         </A>
         <div class="flex overflow-y-auto flex-col gap-3 h-[inherit]">
-          <Card>messages will be here</Card>
-          <Card class="ml-auto">messages will be here</Card>
-          <Card>messages will be here</Card>
-          <Card>messages will be here</Card>
-          <Card>messages will be here</Card>
-          <Card>messages will be here</Card>
-          <Card>messages will be here</Card>
-          <Card>messages will be here</Card>
-          <Card>messages will be here</Card>
-          <Card>messages will be here</Card>
-          <Card>messages will be here</Card>
-          <Card>messages will be here</Card>
-          <Card>messages will be here</Card>
-          <Card>messages will be here</Card>
-          <Card>messages will be here</Card>
-          <Card>messages will be here</Card>
+          <For each={messages()} fallback={<Loading />}>
+            {({ from, value, timestamp }) => (
+              <Card
+                variant={from === 'me' ? 'filled' : 'base'}
+                class={`${
+                  from === 'me' ? 'ml-auto text-right' : ''
+                } flex flex-col`}
+              >
+                <small class="">
+                  {from === 'me' ? from : from.slice(0, 7).concat('...')}
+                </small>
+                <p class="font-bolder">{value}</p>
+                <time class="text-xs text-gray-300">
+                  {new Date(timestamp).toLocaleTimeString()}
+                </time>
+              </Card>
+            )}
+          </For>
         </div>
       </div>
       <form

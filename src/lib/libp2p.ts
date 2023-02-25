@@ -10,12 +10,9 @@ import { createMemo, createSignal } from 'solid-js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
-export const defaultTopic = 'messalid'
-
-const wrtcStar = webRTCStar()
-
 // create a Peer/Node on the network
 export const createNode = async () => {
+  const wrtcStar = webRTCStar()
   const node = await createLibp2p({
     addresses: {
       listen: [
@@ -33,6 +30,13 @@ export const createNode = async () => {
   return node
 }
 
+export interface Message {
+  from: string
+  value: string
+  timestamp: number
+}
+
+export const [messages, setMessages] = createSignal<Message[]>([])
 export const [myPeer, setMyPeer] = createSignal<Libp2p>()
 
 export const isPeerReady = createMemo(() => Boolean(myPeer()))
@@ -40,11 +44,10 @@ export const isPeerReady = createMemo(() => Boolean(myPeer()))
 export const initPeers = async () => {
   const peer = await createNode()
   setMyPeer(peer)
-
   console.log('peerId: ', peer.peerId.toString())
 }
 
-interface Message {
+interface SendMessage {
   peer?: Libp2p
   callback?: () => void
   topic: string
@@ -56,14 +59,14 @@ export const sendMessage = async ({
   topic,
   message,
   callback,
-}: Message) => {
+}: SendMessage) => {
   if (peer) {
-    const result = await peer.pubsub.publish(
-      topic,
-      uint8ArrayFromString(message),
-    )
+    setMessages((messages) => [
+      ...messages,
+      { from: 'me', value: message, timestamp: Date.now() },
+    ])
+    await peer.pubsub.publish(topic, uint8ArrayFromString(message))
     if (callback) callback()
-    console.log(result)
   }
 }
 
@@ -77,11 +80,14 @@ export const dial = async (peerId: string, topic: string) => {
     )
     myPeer()?.pubsub.subscribe(topic)
     myPeer()?.pubsub.addEventListener('message', (e) => {
-      console.log(
-        `Received: ${uint8ArrayToString(e.detail.data)} on topic ${
-          e.detail.topic
-        } when ${new Date(e.timeStamp).toLocaleTimeString()}`,
-      )
+      setMessages((messages) => [
+        ...messages,
+        {
+          timestamp: e.timeStamp,
+          value: uint8ArrayToString(e.detail.data),
+          from: peerId,
+        },
+      ])
     })
     // not working (yet) but it needs to be here
     myPeer()?.handle('/chat/1.0.0', async () => {
