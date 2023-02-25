@@ -2,23 +2,22 @@ import { For, createEffect, createSignal } from 'solid-js'
 import { A, useParams } from 'solid-start'
 
 import { Button, Card, Loading } from '~/components'
-
-import {
-  dial,
-  initPeers,
-  isPeerReady,
-  messages,
-  myPeer,
-  sendMessage,
-} from '~/lib'
+import { useLibP2P } from '~/contexts'
 
 export default function Chat() {
   const params = useParams()
   const [msg, setMsg] = createSignal<string>('')
 
+  const [libp2p, { sendMessage, dial }] = useLibP2P()
+
+  createEffect(() => {
+    dial(params.peerId, params.topic)
+  })
+
   const handleSendMessage = (e: any) => {
     e.preventDefault()
-    if (myPeer() && msg()) {
+
+    if (libp2p.myPeer && msg()) {
       sendMessage({
         message: msg()!,
         topic: params.topic,
@@ -27,21 +26,15 @@ export default function Chat() {
     }
   }
 
-  createEffect(() => {
-    if (!myPeer()) {
-      initPeers()
-    }
-    dial(params.peerId, params.topic)
-  })
-
   return (
     <main class="container pt-2 pb-32 mx-auto h-full sm:pb-20 max-w-[450px]">
       <div class="w-full h-full">
         <A href="/" class="mb-3">
           {'<-'} Go Back
         </A>
-        <div class="flex overflow-y-auto flex-col gap-3 h-[inherit]">
-          <For each={messages()} fallback={<Loading />}>
+        {/* eslint-disable-next-line */}
+        <div class="flex overflow-y-auto flex-col gap-3 h-[inherit] pb-5 px-3 pt-3">
+          <For each={libp2p.messages} fallback={<Loading />}>
             {({ from, value, timestamp }) => (
               <Card
                 variant={from === 'me' ? 'filled' : 'base'}
@@ -66,6 +59,7 @@ export default function Chat() {
         class="flex flex-col gap-3 pt-5 w-full sm:flex-row"
       >
         <input
+          autofocus
           class="w-full"
           value={msg()}
           onKeyUp={(e: any) => setMsg(e.target.value)}
@@ -74,7 +68,7 @@ export default function Chat() {
         <Button
           type="submit"
           class="w-full sm:w-[auto]"
-          isDisabled={() => !isPeerReady() || !msg()}
+          isDisabled={() => !libp2p.myPeer || !msg()}
           onClick={handleSendMessage}
         >
           Send

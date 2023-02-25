@@ -5,6 +5,7 @@
     "dev": "solid-start dev",
     "build": "solid-start build",
     "start": "solid-start start",
+    "solid-start": "solid-start",
     "lint:fix": "eslint_d '**/*.{ts,tsx,js,jsx,json,cjs,mjs}' --fix"
   },
   "type": "module",

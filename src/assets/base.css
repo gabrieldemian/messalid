@@ -41,6 +41,7 @@ body {
   color: rgb(var(--text-base));
   overscroll-behavior-x: none;
   font-weight: 700;
+  word-wrap: break-word;
 }
 
 body {

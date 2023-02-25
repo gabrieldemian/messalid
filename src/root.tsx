@@ -1,5 +1,5 @@
 // @refresh reload
-import { Suspense, createEffect } from 'solid-js'
+import { Suspense } from 'solid-js'
 import {
   Body,
   ErrorBoundary,
@@ -13,10 +13,9 @@ import {
 } from 'solid-start'
 
 import './assets/main.css'
-import { initPeers } from './lib'
+import { LibP2PProvider } from './contexts'
 
 export default function Root() {
-  createEffect(() => initPeers())
   return (
     <Html lang="en">
       <Head>
@@ -25,13 +24,15 @@ export default function Root() {
         <Meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Body>
-        <Suspense>
-          <ErrorBoundary>
-            <Routes>
-              <FileRoutes />
-            </Routes>
-          </ErrorBoundary>
-        </Suspense>
+        <LibP2PProvider>
+          <Suspense>
+            <ErrorBoundary>
+              <Routes>
+                <FileRoutes />
+              </Routes>
+            </ErrorBoundary>
+          </Suspense>
+        </LibP2PProvider>
         <Scripts />
       </Body>
     </Html>
