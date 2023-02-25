@@ -5,7 +5,7 @@
     "dev": "solid-start dev",
     "build": "solid-start build",
     "start": "solid-start start",
-    "lint:fix": "eslint_d '**/*.{ts,tsx,js,jsx,json,cjs,mjs}' --fix"
+    "lint:fix": "eslint_d '**/*.{ts,tsx,cjs}' --fix"
   },
   "type": "module",
   "devDependencies": {
@@ -42,7 +42,6 @@
     "@multiformats/multiaddr": "^11.4.0",
     "@solidjs/meta": "^0.28.2",
     "@solidjs/router": "^0.7.0",
-    "bun": "^0.5.7",
     "clsx": "^1.2.1",
     "libp2p": "^0.42.2",
     "solid-js": "^1.6.11",
