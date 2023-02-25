@@ -29,6 +29,7 @@
 
 html,
 body {
+  overflow: hidden;
   height: 100%;
   box-sizing: border-box;
   touch-action: manipulation;

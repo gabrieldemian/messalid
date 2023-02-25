@@ -6,7 +6,7 @@ import { webSockets } from '@libp2p/websockets'
 import { multiaddr as createMultiAddr } from '@multiformats/multiaddr'
 import type { Libp2p } from 'libp2p'
 import { createLibp2p } from 'libp2p'
-import { createEffect, createMemo, createSignal } from 'solid-js'
+import { createMemo, createSignal } from 'solid-js'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
@@ -37,9 +37,45 @@ export const [myPeer, setMyPeer] = createSignal<Libp2p>()
 
 export const isPeerReady = createMemo(() => Boolean(myPeer()))
 
-createEffect(() => {
+export const initPeers = async () => {
+  const peer = await createNode()
+  setMyPeer(peer)
+
+  console.log('peerId: ', peer.peerId.toString())
+}
+
+interface Message {
+  peer?: Libp2p
+  callback?: () => void
+  topic: string
+  message: string
+}
+
+export const sendMessage = async ({
+  peer = myPeer(),
+  topic,
+  message,
+  callback,
+}: Message) => {
+  if (peer) {
+    const result = await peer.pubsub.publish(
+      topic,
+      uint8ArrayFromString(message),
+    )
+    if (callback) callback()
+    console.log(result)
+  }
+}
+
+export const dial = async (peerId: string, topic: string) => {
   if (myPeer()) {
-    myPeer()?.pubsub.subscribe(defaultTopic)
+    const multiAddr = createMultiAddr(
+      [
+        '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/',
+        `wss/p2p-webrtc-star/p2p/${peerId}`,
+      ].join(''),
+    )
+    myPeer()?.pubsub.subscribe(topic)
     myPeer()?.pubsub.addEventListener('message', (e) => {
       console.log(
         `Received: ${uint8ArrayToString(e.detail.data)} on topic ${
@@ -50,49 +86,7 @@ createEffect(() => {
     // not working (yet) but it needs to be here
     myPeer()?.handle('/chat/1.0.0', async () => {
       console.log('received msg on /chat/')
-      //const msg = await streamToString(stream)
-      //console.log('Received msg from /chat/: ', msg)
     })
-  }
-})
-
-export const initPeers = async () => {
-  const myPeer = await createNode()
-  console.log('peerId: ', myPeer.peerId.toString())
-  setMyPeer(myPeer)
-}
-
-// a trick to only run in the browser
-createEffect(() => initPeers())
-
-interface Message {
-  peer?: Libp2p
-  topic?: typeof defaultTopic
-  message: string
-}
-
-export const sendMessage = async ({
-  peer = myPeer(),
-  topic = defaultTopic,
-  message,
-}: Message) => {
-  if (peer) {
-    const result = await peer.pubsub.publish(
-      topic,
-      uint8ArrayFromString(message),
-    )
-    console.log(result)
-  }
-}
-
-export const dial = async (peerId: string) => {
-  if (myPeer()) {
-    const multiAddr = createMultiAddr(
-      [
-        '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/',
-        `wss/p2p-webrtc-star/p2p/${peerId}`,
-      ].join(''),
-    )
     await myPeer()!.dialProtocol(multiAddr, '/chat/1.0.0')
     console.log('dialed with success')
   }

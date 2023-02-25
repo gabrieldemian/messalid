@@ -1,7 +1,6 @@
 // @refresh reload
-import { Suspense } from 'solid-js'
+import { Suspense, createEffect } from 'solid-js'
 import {
-  A,
   Body,
   ErrorBoundary,
   FileRoutes,
@@ -11,16 +10,13 @@ import {
   Routes,
   Scripts,
   Title,
-  useLocation,
 } from 'solid-start'
+
 import './assets/main.css'
+import { initPeers } from './lib'
 
 export default function Root() {
-  const location = useLocation()
-  const active = (path: string) =>
-    path == location.pathname
-      ? 'border-sky-600'
-      : 'border-transparent hover:border-sky-600'
+  createEffect(() => initPeers())
   return (
     <Html lang="en">
       <Head>
@@ -31,16 +27,6 @@ export default function Root() {
       <Body>
         <Suspense>
           <ErrorBoundary>
-            <nav class="bg-sky-800">
-              <ul class="container flex items-center p-3 text-gray-200">
-                <li class={`border-b-2 ${active('/')} mx-1.5 sm:mx-6`}>
-                  <A href="/">Home</A>
-                </li>
-                <li class={`border-b-2 ${active('/about')} mx-1.5 sm:mx-6`}>
-                  <A href="/about">About</A>
-                </li>
-              </ul>
-            </nav>
             <Routes>
               <FileRoutes />
             </Routes>

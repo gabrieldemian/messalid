@@ -1,5 +1,8 @@
 import clsx from 'clsx'
-import { Accessor, JSX, JSXElement } from 'solid-js'
+import { Accessor, JSX, JSXElement, Show } from 'solid-js'
+import { A } from 'solid-start'
+
+import { Loading } from '../Loading'
 
 const variants = {
   outlined: 'border-2 border-lavender text-lavender',
@@ -7,13 +10,16 @@ const variants = {
 } as const
 
 interface Props {
-  className?: string
+  class?: string
   variant?: keyof typeof variants
   isRounded?: boolean
   onClick?: JSX.EventHandlerUnion<HTMLButtonElement, MouseEvent>
   isFluid?: boolean
+  isLoading?: Accessor<boolean>
+  href?: string
   children: JSXElement
   isDisabled?: Accessor<boolean>
+  type?: 'button' | 'submit'
 }
 
 const Button = (props: Props) => {
@@ -22,11 +28,12 @@ const Button = (props: Props) => {
   // reactivity if I did it.
   const {
     variant = 'filled',
-    className = '',
+    class: className = '',
     isRounded = true,
     isFluid = false,
     children,
     onClick,
+    type = 'button',
   } = props
   const isFilled = variant === 'filled'
 
@@ -58,8 +65,9 @@ const Button = (props: Props) => {
     }
   }
 
-  return (
+  const Button_ = () => (
     <button
+      type={type}
       ref={elRef}
       onMouseUp={pressButtonUp}
       onMouseDown={pressButtonDown}
@@ -67,8 +75,23 @@ const Button = (props: Props) => {
       class={classes}
       disabled={props.isDisabled?.()}
     >
-      {children}
+      <Show when={props.isLoading?.()}>
+        <Loading />
+      </Show>
+      {props.isLoading?.() ? 'Loading...' : children}
     </button>
+  )
+
+  return (
+    <>
+      {props.href ? (
+        <A href={props.href}>
+          <Button_ />
+        </A>
+      ) : (
+        <Button_ />
+      )}
+    </>
   )
 }
 

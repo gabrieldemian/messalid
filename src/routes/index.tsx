@@ -1,37 +1,54 @@
 import { A } from '@solidjs/router'
 import { createSignal } from 'solid-js'
 
-import { Button } from '~/components'
-import { isPeerReady, myPeer, sendMessage } from '~/lib'
+import { Button, Card } from '~/components'
+import { isPeerReady, myPeer } from '~/lib'
 
 export default function Home() {
-  const [msg, setMsg] = createSignal<string>('')
-
-  const handleSendMessage = async () => {
-    if (myPeer() && msg()) {
-      sendMessage({ message: msg()! })
-    }
-  }
-
-  // todo: screen with 2 options:
-  // 1 - create a room with a topic -> go to chat
-  // 2 - paste peerid and topic -> go to chat
+  const [peerId, setPeerId] = createSignal<string>('')
+  const [topic, setTopic] = createSignal<string>('')
 
   return (
-    <main class="text-center">
-      <input
-        value={msg()}
-        onKeyUp={(e: any) => setMsg(e.target.value)}
-        placeholder="Type your message..."
-      />
-      <Button
-        isDisabled={() => !isPeerReady() || !msg()}
-        onClick={handleSendMessage}
-      >
-        Send
-      </Button>
-      <p>{isPeerReady() ? 'peer is ready' : 'Loading...'}</p>
-      <A href={`/dial/${myPeer()?.peerId.toString()}/nadaagui`}>Chat</A>
+    <main class="flex justify-center h-full">
+      <Card class="flex flex-col gap-10 m-auto w-full max-w-[450px]">
+        <div class="flex flex-col gap-3">
+          <h1 class="text-2xl">Create Room</h1>
+          <h2 class="text-xl">Topic</h2>
+          <input
+            class="w-full"
+            value={topic()}
+            onKeyUp={(e: any) => setTopic(e.target.value)}
+            placeholder="i.e: Cat breeds"
+          />
+          <Button
+            isFluid
+            isLoading={() => !isPeerReady()}
+            isDisabled={() => !topic() || !isPeerReady()}
+            href={`/dial/${topic()}/${myPeer()?.peerId}`}
+          >
+            Create
+          </Button>
+        </div>
+        <div class="flex flex-col gap-3">
+          <h1 class="text-2xl">Join Room</h1>
+          <h2 class="text-xl">PeerID</h2>
+          <input
+            class="w-full"
+            value={peerId()}
+            onKeyUp={(e: any) => setPeerId(e.target.value)}
+            placeholder="PeerId of your friend"
+          />
+          <Button
+            isFluid
+            isLoading={() => !isPeerReady()}
+            isDisabled={() => !peerId() || !topic()}
+            href={`/dial/${topic()}/${peerId()}`}
+          >
+            Join
+          </Button>
+        </div>
+        <A href={`/dial/${myPeer()?.peerId.toString()}/nadaagui`}>Chat</A>
+      </Card>
     </main>
   )
 }
