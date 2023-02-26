@@ -5,6 +5,6 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [solid({ adapter: vercel({}) })],
   optimizeDeps: {
-    esbuildOptions: { target: 'es2020' },
+    esbuildOptions: { target: 'esnext' },
   },
 })
